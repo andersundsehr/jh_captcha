@@ -1,0 +1,1 @@
+@import 'EXT:jh_captcha/Configuration/TypoScript/constants.typoscript'
