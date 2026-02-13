@@ -17,12 +17,12 @@ abstract class AbstractCaptchaValidator extends AbstractValidator
      *
      * @var bool
      */
-    protected bool $acceptsEmptyValues = false;
+    protected $acceptsEmptyValues = false;
 
     /**
      * @var array Extension TypoScript
      */
-    protected array $settings = [];
+    protected $settings = [];
 
     protected function getSettings(): array
     {
