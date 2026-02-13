@@ -48,11 +48,21 @@ abstract class AbstractCaptchaValidator extends AbstractValidator
      * Creates a new validation error object and adds it to $this->results.
      *
      * @param string $translateKey
-     * @param int    $code         The error code (a unix timestamp)
-     * @param array  $arguments    Arguments to be replaced in message
+     * @param int $code The error code (a unix timestamp)
+     * @param array $arguments Arguments to be replaced in message
      */
-    protected function addError(string $translateKey, int $code, array $arguments = []): void
+    protected function addError(
+        string $translateKey,
+        int    $code,
+        array  $arguments = [],
+        string $title = ''
+    ): void
     {
-        parent::addError($this->translateErrorMessage($translateKey, 'jh_captcha'), $code, $arguments);
+        parent::addError(
+            $this->translateErrorMessage($translateKey, 'jh_captcha'),
+            $code,
+            $arguments,
+            $title
+        );
     }
 }
