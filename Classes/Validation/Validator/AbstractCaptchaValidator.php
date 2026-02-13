@@ -4,7 +4,6 @@ namespace Haffner\JhCaptcha\Validation\Validator;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Validation\Validator\AbstractValidator;
 
 abstract class AbstractCaptchaValidator extends AbstractValidator
@@ -18,24 +17,31 @@ abstract class AbstractCaptchaValidator extends AbstractValidator
      *
      * @var bool
      */
-    protected $acceptsEmptyValues = false;
+    protected bool $acceptsEmptyValues = false;
 
     /**
      * @var array Extension TypoScript
      */
-    protected $settings;
+    protected array $settings = [];
 
-    public function __construct(array $options = array())
+    protected function getSettings(): array
     {
-        parent::__construct($options);
-        /** @var ObjectManager $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var ConfigurationManagerInterface $configurationManager */
-        $configurationManager = $objectManager->get(ConfigurationManagerInterface::class);
-        $this->settings = $configurationManager->getConfiguration(
+        if ($this->settings !== []) {
+            return $this->settings;
+        }
+
+        $configurationManager = GeneralUtility::makeInstance(ConfigurationManagerInterface::class);
+        if (!$configurationManager instanceof ConfigurationManagerInterface) {
+            return [];
+        }
+
+        $settings = $configurationManager->getConfiguration(
             ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
             'JhCaptcha'
         );
+
+        $this->settings = is_array($settings) ? $settings : [];
+        return $this->settings;
     }
 
     /**
@@ -44,10 +50,9 @@ abstract class AbstractCaptchaValidator extends AbstractValidator
      * @param string $translateKey
      * @param int    $code         The error code (a unix timestamp)
      * @param array  $arguments    Arguments to be replaced in message
-     * @param string $title        title of the error
      */
-    protected function addError($translateKey, $code, array $arguments = [], $title = '')
+    protected function addError(string $translateKey, int $code, array $arguments = []): void
     {
-        parent::addError($this->translateErrorMessage($translateKey, 'jh_captcha'), $code);
+        parent::addError($this->translateErrorMessage($translateKey, 'jh_captcha'), $code, $arguments);
     }
 }

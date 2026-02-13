@@ -4,9 +4,9 @@ TYPO3:
       prototypes:
         standard:
           formEditor:
-            dynamicRequireJsModules:
+            dynamicJavaScriptModules:
               additionalViewModelModules:
-                - 'TYPO3/CMS/JhCaptcha/Backend/FormEditor/JhCaptchaRecaptchaViewModel'
+                - '@haffner/jh-captcha/Backend/FormEditor/JhCaptchaRecaptchaViewModel.js'
 
             formEditorPartials:
               FormElement-JhCaptchaRecaptcha: 'Stage/SimpleTemplate'

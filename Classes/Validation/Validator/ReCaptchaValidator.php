@@ -12,12 +12,14 @@ class ReCaptchaValidator extends AbstractCaptchaValidator
      *
      * @param mixed $value
      */
-    protected function isValid($value)
+    protected function isValid($value): void
     {
-        if ($this->settings['reCaptcha']['version'] == 2) {
-            $secret = htmlspecialchars($this->settings['reCaptcha']['v2']['secretKey']);
+        $settings = $this->getSettings();
+
+        if ((int)($settings['reCaptcha']['version'] ?? 3) === 2) {
+            $secret = htmlspecialchars((string)($settings['reCaptcha']['v2']['secretKey'] ?? ''));
         } else {
-            $secret = htmlspecialchars($this->settings['reCaptcha']['v3']['secretKey']);
+            $secret = htmlspecialchars((string)($settings['reCaptcha']['v3']['secretKey'] ?? ''));
         }
 
         $url = 'https://www.google.com/recaptcha/api/siteverify';
@@ -26,8 +28,8 @@ class ReCaptchaValidator extends AbstractCaptchaValidator
             true
         );
 
-        if ($apiResponse['success'] == false) {
-            if (is_array($apiResponse['error-codes'])) {
+        if (!is_array($apiResponse) || ($apiResponse['success'] ?? false) !== true) {
+            if (is_array($apiResponse['error-codes'] ?? null)) {
                 foreach ($apiResponse['error-codes'] as $errorCode) {
                     switch ($errorCode) {
                         case 'missing-input-secret':
@@ -56,8 +58,8 @@ class ReCaptchaValidator extends AbstractCaptchaValidator
                 $this->addError('defaultError', 1427031929);
             }
         } else {
-            if ($this->settings['reCaptcha']['version'] != 2 && isset($apiResponse['score'])) {
-                if ($apiResponse['score'] < $this->settings['reCaptcha']['v3']['minimumScore']) {
+            if ((int)($settings['reCaptcha']['version'] ?? 3) !== 2 && isset($apiResponse['score'])) {
+                if ((float)$apiResponse['score'] < (float)($settings['reCaptcha']['v3']['minimumScore'] ?? 0.0)) {
                     $this->addError('scoreError', 1541173838);
                 }
             }
